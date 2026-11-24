@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/carservicedb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+  jpa:
+    show-sql: false
+  cloud:
+    consul:
+      host: consul
+      port: 8500

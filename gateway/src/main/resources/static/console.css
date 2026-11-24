@@ -1,0 +1,134 @@
+:root {
+    --bg: #0b1220;
+    --panel: #111c30;
+    --panel-2: #17253f;
+    --ink: #e6edf7;
+    --muted: #8fa3c4;
+    --accent: #ff5a5f;          /* couleur signature Consul */
+    --accent-2: #d93a48;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --line: #24334f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Inter, system-ui, sans-serif;
+    background: radial-gradient(1100px 560px at 85% -10%, #2a1620 0%, var(--bg) 55%);
+    color: var(--ink);
+    min-height: 100vh;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(9, 15, 26, 0.9);
+    backdrop-filter: blur(6px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.logo {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+}
+
+.brand h1 { margin: 0; font-size: 20px; }
+.brand p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+.pill-link {
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+.pill-link:hover { background: var(--accent); color: #0b1220; }
+
+button {
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    padding: 8px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+button:hover { background: var(--accent); color: #fff; }
+
+main { padding: 28px 32px 60px; display: grid; gap: 20px; max-width: 1420px; margin: 0 auto; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+
+.kpi {
+    background: linear-gradient(160deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 20px;
+}
+.kpi .label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.kpi .value { font-size: 30px; font-weight: 700; margin-top: 6px; }
+.kpi .value small { font-size: 14px; color: var(--muted); font-weight: 500; }
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 22px;
+}
+.panel h2 { margin: 0 0 14px; font-size: 15px; }
+.panel h2 .hint { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+    text-align: left; padding: 8px 10px; color: var(--muted); font-weight: 600;
+    border-bottom: 1px solid var(--line); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.6px;
+}
+td { padding: 10px; border-bottom: 1px solid rgba(36, 51, 79, 0.5); font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; }
+tbody tr:hover { background: var(--panel-2); }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); background: var(--panel-2);
+    border-radius: 999px; padding: 8px 14px; font-size: 12px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 210px 1fr 60px; align-items: center; gap: 12px; font-size: 13px; }
+.bar-track { height: 10px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.bar-value { color: var(--muted); text-align: right; }
+
+.routes { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.9; color: var(--muted); }
+.routes code {
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 6px; padding: 2px 7px; color: var(--accent); font-size: 12px;
+}
+
+footer { text-align: center; font-size: 12px; color: var(--muted); padding: 24px; border-top: 1px solid var(--line); }
+.error { color: var(--warn); }

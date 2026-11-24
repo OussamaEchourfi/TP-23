@@ -1,0 +1,67 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: SERVICE-CAR
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/carservicedb?createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        health-check-timeout: 4s
+        health-check-critical-timeout: 30s
+        prefer-ip-address: true
+        tags:
+          - team=fleetops
+          - tier=data
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      clientService:
+        sliding-window-size: 10
+        minimum-number-of-calls: 4
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+
+info:
+  app:
+    name: SERVICE-CAR
+    discovery: consul
+    tp: "TP 23 - Migration Eureka -> Consul"

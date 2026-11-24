@@ -1,0 +1,21 @@
+# Phase de bootstrap : Consul Config lit le KV AVANT de charger application.yml.
+# Les valeurs posees dans consul/config/service-client/... ont donc priorite.
+spring:
+  application:
+    name: SERVICE-CLIENT
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      config:
+        enabled: ${CONSUL_CONFIG_ENABLED:true}
+        format: yaml
+        prefixes:
+          - consul/config
+        default-context: service-client
+        profile-separator: ':'
+        data-key: data
+        # Best-effort : si le KV est absent, l'application demarre quand meme
+        fail-fast: false

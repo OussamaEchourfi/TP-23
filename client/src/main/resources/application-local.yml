@@ -1,0 +1,11 @@
+# Profil "local" : execution sans Docker ni MySQL (H2 en memoire).
+# Le profil "docker" utilise MySQL (voir application-docker.yml).
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:clientservicedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

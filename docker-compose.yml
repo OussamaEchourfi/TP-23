@@ -1,0 +1,150 @@
+# TP 23 - Migration Eureka -> Consul
+# Pile complete : Consul (discovery + KV) + MySQL + SERVICE-CLIENT + SERVICE-CAR + SERVICE-GATEWAY
+#
+#   docker compose up --build
+#
+# Consul UI : http://localhost:8500/ui/dc1/services
+# Console   : http://localhost:8888/
+name: tp23-consul-migration
+
+services:
+  consul:
+    image: hashicorp/consul:1.19
+    container_name: consul
+    command: agent -dev -client=0.0.0.0 -ui -log-level=info
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    networks: [fleetnet]
+
+  # Charge les cles du KV consommees par spring-cloud-starter-consul-config
+  consul-seed:
+    image: hashicorp/consul:1.19
+    container_name: consul-seed
+    depends_on:
+      consul:
+        condition: service_healthy
+    volumes:
+      - ./consul/config/service-client/data.yml:/seed/service-client.yml:ro
+      - ./consul/config/service-car/data.yml:/seed/service-car.yml:ro
+      - ./consul/config/service-gateway/data.yml:/seed/service-gateway.yml:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        for svc in service-client service-car service-gateway; do
+          consul kv put "consul/config/$$svc/data" "@/seed/$$svc.yml"
+          echo "KV ecrite : consul/config/$$svc/data"
+        done
+        consul kv get -recurse consul/config
+    environment:
+      CONSUL_HTTP_ADDR: http://consul:8500
+    networks: [fleetnet]
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clientservicedb
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+      start_period: 20s
+    networks: [fleetnet]
+
+  service-client:
+    build:
+      context: ./client
+    container_name: service-client
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: "8500"
+    ports:
+      - "8081:8081"
+    depends_on:
+      consul:
+        condition: service_healthy
+      consul-seed:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 4s
+      retries: 12
+      start_period: 45s
+    networks: [fleetnet]
+
+  service-car:
+    build:
+      context: ./car
+    container_name: service-car
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: "8500"
+    ports:
+      - "8082:8082"
+    depends_on:
+      consul:
+        condition: service_healthy
+      consul-seed:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 4s
+      retries: 12
+      start_period: 45s
+    networks: [fleetnet]
+
+  service-gateway:
+    build:
+      context: ./gateway
+    container_name: service-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: "8500"
+    ports:
+      - "8888:8888"
+    depends_on:
+      consul:
+        condition: service_healthy
+      service-client:
+        condition: service_started
+      service-car:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 4s
+      retries: 12
+      start_period: 45s
+    networks: [fleetnet]
+
+volumes:
+  mysql-data:
+
+networks:
+  fleetnet:
+    driver: bridge

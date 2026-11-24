@@ -1,0 +1,46 @@
+server:
+  port: ${SERVER_PORT:8888}
+
+spring:
+  application:
+    name: SERVICE-GATEWAY
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        health-check-timeout: 4s
+        prefer-ip-address: true
+        tags:
+          - team=fleetops
+          - tier=edge
+    gateway:
+      discovery:
+        locator:
+          # /SERVICE-CLIENT/api/client -> lb://SERVICE-CLIENT/api/client
+          enabled: true
+          lower-case-service-id: false
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 6s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO

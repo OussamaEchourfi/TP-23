@@ -1,0 +1,12 @@
+# Cle KV Consul : consul/config/service-client/data (format yaml)
+# Lue par spring-cloud-starter-consul-config au bootstrap, elle SURCHARGE application.yml.
+spring:
+  jpa:
+    show-sql: false
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+com.example.client:
+  max-age-accepted: 120
+  devise: "MAD"

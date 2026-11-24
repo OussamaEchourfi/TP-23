@@ -1,0 +1,8 @@
+# Cle KV Consul : consul/config/service-gateway/data
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        response-timeout: 10s
+com.example.gateway:
+  rate-limit-enabled: false

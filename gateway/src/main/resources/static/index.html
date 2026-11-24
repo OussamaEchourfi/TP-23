@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Consul Migration Console - TP 23</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <link rel="stylesheet" href="/console.css"/>
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">C</span>
+        <div>
+            <h1>Consul Migration Console</h1>
+            <p>Eureka &rarr; Consul &middot; TP 23</p>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a class="pill-link" href="http://localhost:8500/ui/dc1/services" target="_blank" rel="noopener">Ouvrir Consul UI</a>
+        <button id="refresh" type="button">Actualiser</button>
+    </div>
+</header>
+
+<main>
+    <section class="kpis" id="kpis"></section>
+
+    <section class="panel">
+        <h2>Registre Consul <span class="hint">(source de verite du service discovery)</span></h2>
+        <div id="registry" class="pill-row"></div>
+    </section>
+
+    <section class="panel">
+        <h2>Instances detaillees</h2>
+        <table id="instances">
+            <thead>
+            <tr><th>Service</th><th>Instance</th><th>Hote</th><th>Port</th><th>URI</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section class="grid">
+        <div class="panel">
+            <h2>Verification de la migration</h2>
+            <div id="migration" class="bars"></div>
+        </div>
+        <div class="panel">
+            <h2>Routage via la Gateway</h2>
+            <ul class="routes">
+                <li><code>/SERVICE-CLIENT/api/client</code> &rarr; discoverie Consul</li>
+                <li><code>/SERVICE-CAR/api/car</code> &rarr; discoverie Consul</li>
+                <li><code>/api/migration/registry</code> &rarr; etat du registre</li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>Consul 8500 &middot; Client 8081 &middot; Car 8082 &middot; Gateway 8888</span>
+</footer>
+<script src="/console.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: SERVICE-CLIENT
+  datasource:
+    # Le profil "docker" surcharge cette URL (voir application-docker.yml)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/clientservicedb?createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        # Identifiant logique republie dans Consul
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        health-check-timeout: 4s
+        health-check-critical-timeout: 30s
+        prefer-ip-address: true
+        tags:
+          - team=fleetops
+          - tier=data
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+info:
+  app:
+    name: SERVICE-CLIENT
+    discovery: consul
+    tp: "TP 23 - Migration Eureka -> Consul"

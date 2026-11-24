@@ -1,0 +1,12 @@
+# Profil utilise dans Docker Compose : MySQL sur le reseau interne, Consul par son nom de service.
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/clientservicedb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+  jpa:
+    show-sql: false
+  cloud:
+    consul:
+      host: consul
+      port: 8500

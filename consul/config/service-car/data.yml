@@ -1,0 +1,7 @@
+# Cle KV Consul : consul/config/service-car/data
+spring:
+  jpa:
+    show-sql: false
+com.example.car:
+  url-client: "http://SERVICE-CLIENT"
+  max-vehicules-par-client: 5
